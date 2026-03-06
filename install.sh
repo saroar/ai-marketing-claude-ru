@@ -1,6 +1,7 @@
 #!/bin/bash
 # AI Marketing Suite RU — Установщик скилов Claude Code
 # Устанавливает маркетинговые скилы для русского рынка
+# Команда: /market-ru (не конфликтует с английской версией /market)
 
 set -e
 
@@ -14,8 +15,8 @@ NC='\033[0m'
 
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║   AI Marketing Suite — Claude Code Skills    ║${NC}"
-echo -e "${CYAN}║   15 Skills · 5 Agents · 4 Scripts · PDF     ║${NC}"
+echo -e "${CYAN}║  AI Marketing Suite RU — для Русского рынка  ║${NC}"
+echo -e "${CYAN}║  Яндекс · VK · Telegram · 152-ФЗ · Метрика  ║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -23,55 +24,48 @@ echo ""
 if [ -n "$BASH_SOURCE" ] && [ "$BASH_SOURCE" != "bash" ] && [ -f "$BASH_SOURCE" ]; then
     SCRIPT_DIR="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
 else
-    # Running via curl | bash — need to clone
-    echo -e "${YELLOW}Running remote install — cloning repository...${NC}"
-    TEMP_DIR=$(mktemp -d)
-    git clone --depth 1 https://github.com/zubair-trabzada/ai-marketing-claude.git "$TEMP_DIR/ai-marketing-claude" 2>/dev/null
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to clone repository.${NC}"
-        exit 1
-    fi
-    SCRIPT_DIR="$TEMP_DIR/ai-marketing-claude"
+    echo -e "${RED}Запустите install.sh из папки репозитория.${NC}"
+    exit 1
 fi
 
-# Target directories
+# Target directories — use "market-ru" prefix to coexist with English version
 SKILLS_DIR="$HOME/.claude/skills"
 AGENTS_DIR="$HOME/.claude/agents"
 
-echo -e "${BLUE}Source:${NC}  $SCRIPT_DIR"
-echo -e "${BLUE}Target:${NC} $SKILLS_DIR"
+echo -e "${BLUE}Источник:${NC}  $SCRIPT_DIR"
+echo -e "${BLUE}Цель:${NC}      $SKILLS_DIR"
 echo ""
 
 # Check if Claude Code is available
 if command -v claude &>/dev/null; then
-    echo -e "${GREEN}✓ Claude Code detected${NC}"
+    echo -e "${GREEN}✓ Claude Code обнаружен${NC}"
 else
-    echo -e "${YELLOW}⚠ Claude Code not found in PATH${NC}"
+    echo -e "${YELLOW}⚠ Claude Code не найден в PATH${NC}"
     if [ -t 0 ]; then
-        read -p "  Continue anyway? (y/n): " -n 1 -r
+        read -p "  Продолжить? (y/n): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            echo "Installation cancelled."
+            echo "Установка отменена."
             exit 0
         fi
     else
-        echo "  Continuing (non-interactive mode)..."
+        echo "  Продолжаю (неинтерактивный режим)..."
     fi
 fi
 
 # Create directories
-echo -e "\n${BLUE}Creating directories...${NC}"
+echo -e "\n${BLUE}Создание директорий...${NC}"
 mkdir -p "$SKILLS_DIR"
 mkdir -p "$AGENTS_DIR"
 
-# Install main skill orchestrator
-echo -e "${BLUE}Installing main skill...${NC}"
-mkdir -p "$SKILLS_DIR/market"
-cp "$SCRIPT_DIR/market/SKILL.md" "$SKILLS_DIR/market/SKILL.md"
-echo -e "  ${GREEN}✓${NC} market/SKILL.md (orchestrator)"
+# Install main skill orchestrator as "market-ru"
+echo -e "${BLUE}Установка главного скила (market-ru)...${NC}"
+mkdir -p "$SKILLS_DIR/market-ru"
+cp "$SCRIPT_DIR/market/SKILL.md" "$SKILLS_DIR/market-ru/SKILL.md"
+echo -e "  ${GREEN}✓${NC} market-ru/SKILL.md (оркестратор)"
 
-# Install sub-skills
-echo -e "\n${BLUE}Installing sub-skills...${NC}"
+# Install sub-skills with "market-ru-" prefix
+echo -e "\n${BLUE}Установка под-скилов...${NC}"
 SKILLS=(
     "market-audit"
     "market-copy"
@@ -91,18 +85,19 @@ SKILLS=(
 
 SKILL_COUNT=0
 for skill in "${SKILLS[@]}"; do
+    ru_skill="${skill/market-/market-ru-}"
     if [ -f "$SCRIPT_DIR/skills/$skill/SKILL.md" ]; then
-        mkdir -p "$SKILLS_DIR/$skill"
-        cp "$SCRIPT_DIR/skills/$skill/SKILL.md" "$SKILLS_DIR/$skill/SKILL.md"
-        echo -e "  ${GREEN}✓${NC} $skill"
+        mkdir -p "$SKILLS_DIR/$ru_skill"
+        cp "$SCRIPT_DIR/skills/$skill/SKILL.md" "$SKILLS_DIR/$ru_skill/SKILL.md"
+        echo -e "  ${GREEN}✓${NC} $ru_skill"
         SKILL_COUNT=$((SKILL_COUNT + 1))
     else
-        echo -e "  ${YELLOW}⚠${NC} $skill (not found, skipping)"
+        echo -e "  ${YELLOW}⚠${NC} $skill (не найден, пропуск)"
     fi
 done
 
-# Install agents
-echo -e "\n${BLUE}Installing agents...${NC}"
+# Install agents with "market-ru-" prefix
+echo -e "\n${BLUE}Установка агентов...${NC}"
 AGENTS=(
     "market-content"
     "market-conversion"
@@ -113,18 +108,19 @@ AGENTS=(
 
 AGENT_COUNT=0
 for agent in "${AGENTS[@]}"; do
+    ru_agent="${agent/market-/market-ru-}"
     if [ -f "$SCRIPT_DIR/agents/$agent.md" ]; then
-        cp "$SCRIPT_DIR/agents/$agent.md" "$AGENTS_DIR/$agent.md"
-        echo -e "  ${GREEN}✓${NC} $agent"
+        cp "$SCRIPT_DIR/agents/$agent.md" "$AGENTS_DIR/$ru_agent.md"
+        echo -e "  ${GREEN}✓${NC} $ru_agent"
         AGENT_COUNT=$((AGENT_COUNT + 1))
     else
-        echo -e "  ${YELLOW}⚠${NC} $agent (not found, skipping)"
+        echo -e "  ${YELLOW}⚠${NC} $agent (не найден, пропуск)"
     fi
 done
 
-# Install scripts
-echo -e "\n${BLUE}Installing scripts...${NC}"
-SCRIPTS_TARGET="$SKILLS_DIR/market/scripts"
+# Install scripts (shared scripts dir under market-ru)
+echo -e "\n${BLUE}Установка скриптов...${NC}"
+SCRIPTS_TARGET="$SKILLS_DIR/market-ru/scripts"
 mkdir -p "$SCRIPTS_TARGET"
 
 SCRIPT_FILES=(
@@ -142,13 +138,13 @@ for script in "${SCRIPT_FILES[@]}"; do
         echo -e "  ${GREEN}✓${NC} $script"
         SCRIPT_COUNT=$((SCRIPT_COUNT + 1))
     else
-        echo -e "  ${YELLOW}⚠${NC} $script (not found, skipping)"
+        echo -e "  ${YELLOW}⚠${NC} $script (не найден, пропуск)"
     fi
 done
 
 # Install templates
-echo -e "\n${BLUE}Installing templates...${NC}"
-TEMPLATES_TARGET="$SKILLS_DIR/market/templates"
+echo -e "\n${BLUE}Установка шаблонов...${NC}"
+TEMPLATES_TARGET="$SKILLS_DIR/market-ru/templates"
 mkdir -p "$TEMPLATES_TARGET"
 
 TEMPLATE_COUNT=0
@@ -163,60 +159,52 @@ if [ -d "$SCRIPT_DIR/templates" ]; then
 fi
 
 # Install Python dependencies
-echo -e "\n${BLUE}Checking Python dependencies...${NC}"
+echo -e "\n${BLUE}Проверка зависимостей Python...${NC}"
 if command -v python3 &>/dev/null; then
     PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>/dev/null)
-    echo -e "  ${GREEN}✓${NC} Python $PYTHON_VERSION detected"
+    echo -e "  ${GREEN}✓${NC} Python $PYTHON_VERSION обнаружен"
 
-    # Check for reportlab (needed for PDF reports)
     if python3 -c "import reportlab" 2>/dev/null; then
-        echo -e "  ${GREEN}✓${NC} reportlab installed (PDF reports ready)"
+        echo -e "  ${GREEN}✓${NC} reportlab установлен (PDF-отчёты готовы)"
     else
-        echo -e "  ${YELLOW}⚠${NC} reportlab not installed (needed for PDF reports)"
-        echo -e "    Install with: ${CYAN}pip install reportlab${NC}"
+        echo -e "  ${YELLOW}⚠${NC} reportlab не установлен (нужен для PDF)"
+        echo -e "    Установить: ${CYAN}pip install reportlab${NC}"
     fi
 
-    # Check for requests (optional, scripts use urllib as fallback)
     if python3 -c "import requests" 2>/dev/null; then
-        echo -e "  ${GREEN}✓${NC} requests installed"
+        echo -e "  ${GREEN}✓${NC} requests установлен"
     fi
 else
-    echo -e "  ${YELLOW}⚠${NC} Python 3 not found — scripts won't work"
-    echo -e "    Install Python: ${CYAN}https://python.org${NC}"
-fi
-
-# Cleanup temp directory if used
-if [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ]; then
-    rm -rf "$TEMP_DIR"
+    echo -e "  ${YELLOW}⚠${NC} Python 3 не найден — скрипты не будут работать"
 fi
 
 # Summary
 echo ""
 echo -e "${GREEN}╔══════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║           Installation Complete!              ║${NC}"
+echo -e "${GREEN}║        Установка завершена!                   ║${NC}"
 echo -e "${GREEN}╚══════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "  Skills installed:    ${GREEN}$SKILL_COUNT${NC}"
-echo -e "  Agents installed:    ${GREEN}$AGENT_COUNT${NC}"
-echo -e "  Scripts installed:   ${GREEN}$SCRIPT_COUNT${NC}"
-echo -e "  Templates installed: ${GREEN}$TEMPLATE_COUNT${NC}"
+echo -e "  Скилов установлено:   ${GREEN}$SKILL_COUNT${NC}"
+echo -e "  Агентов установлено:  ${GREEN}$AGENT_COUNT${NC}"
+echo -e "  Скриптов установлено: ${GREEN}$SCRIPT_COUNT${NC}"
+echo -e "  Шаблонов установлено: ${GREEN}$TEMPLATE_COUNT${NC}"
 echo ""
-echo -e "${CYAN}Available Commands:${NC}"
-echo "  /market audit <url>        Full marketing audit (5 parallel agents)"
-echo "  /market quick <url>        60-second marketing snapshot"
-echo "  /market copy <url>         Generate optimized copy"
-echo "  /market emails <topic>     Generate email sequences"
-echo "  /market social <topic>     Social media content calendar"
-echo "  /market ads <url>          Ad creative and copy"
-echo "  /market funnel <url>       Sales funnel analysis"
-echo "  /market competitors <url>  Competitive intelligence"
-echo "  /market landing <url>      Landing page CRO"
-echo "  /market launch <product>   Launch playbook"
-echo "  /market proposal <client>  Client proposal generator"
-echo "  /market report <url>       Marketing report (Markdown)"
-echo "  /market report-pdf <url>   Marketing report (PDF)"
-echo "  /market seo <url>          SEO content audit"
-echo "  /market brand <url>        Brand voice analysis"
+echo -e "${CYAN}Доступные команды (/market-ru):${NC}"
+echo "  /market-ru audit <url>        Полный аудит (5 параллельных агентов)"
+echo "  /market-ru quick <url>        Быстрый снапшот за 60 секунд"
+echo "  /market-ru copy <url>         Генерация копирайтинга"
+echo "  /market-ru emails <тема>      Email-последовательности"
+echo "  /market-ru social <тема>      Контент-план (ВК, Telegram, OK.ru)"
+echo "  /market-ru ads <url>          Яндекс.Директ + VK Ads + Telegram"
+echo "  /market-ru funnel <url>       Анализ воронки продаж"
+echo "  /market-ru competitors <url>  Конкурентная разведка"
+echo "  /market-ru landing <url>      CRO-анализ лендинга"
+echo "  /market-ru launch <продукт>   План запуска"
+echo "  /market-ru proposal <клиент>  Коммерческое предложение"
+echo "  /market-ru report <url>       Маркетинговый отчёт"
+echo "  /market-ru seo <url>          SEO-аудит (Яндекс + Google)"
+echo "  /market-ru brand <url>        Анализ голоса бренда"
 echo ""
-echo -e "  ${YELLOW}Start a new Claude Code session to use the skills.${NC}"
+echo -e "  ${YELLOW}Начните новую сессию Claude Code для использования скилов.${NC}"
+echo -e "  ${GREEN}Оба варианта (/market и /market-ru) работают одновременно.${NC}"
 echo ""
