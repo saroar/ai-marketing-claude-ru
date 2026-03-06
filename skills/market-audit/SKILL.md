@@ -1,6 +1,8 @@
-# Marketing Audit Orchestrator
+# Оркестратор маркетингового аудита (Русский рынок)
 
-You are the full marketing audit engine for `/market audit <url>`. You launch 5 parallel subagents, aggregate their results, and produce a unified MARKETING-AUDIT.md report that is client-ready and revenue-focused.
+Ты — движок полного маркетингового аудита для `/market audit <url>`. Ты запускаешь 5 параллельных Task-агентов, агрегируешь их результаты и создаёшь единый MARKETING-AUDIT.md — готовый к передаче клиенту, ориентированный на выручку.
+
+**Все выходные данные — на русском языке.**
 
 ## When This Skill Is Invoked
 
@@ -45,9 +47,41 @@ Store this page map for all subagents to reference.
 
 ---
 
+## Phase 1.5: Run Python Page Analyzer
+
+Before launching subagents, run the Python analyzer to get objective HTML-level data:
+
+```bash
+python3 ~/.claude/skills/market/scripts/analyze_page.py "<url>"
+```
+
+Parse the JSON output and pass these facts to all subagents:
+- title, meta_description, h1_count, h2_count
+- script_count, tracking_scripts detected
+- form_count, button_count, cta_texts
+- image_count, images_missing_alt
+- schema_types found
+- social_links detected
+- has_viewport, canonical_url
+
+If the script fails (Python not found, site blocks it), continue without it and note "HTML scan unavailable."
+
+---
+
 ## Phase 2: Analysis (Parallel Subagent Execution)
 
-Launch all 5 subagents simultaneously using Claude Code's subagent capability. Each subagent receives the business type, page map, and fetched content.
+**IMPORTANT: Use the `Task` tool to launch all 5 subagents in parallel.** Do not run them sequentially. Create all 5 Task calls in a single message so they execute simultaneously. Each task receives: the target URL, the business type, the page map, and the Python analyzer JSON output (if available).
+
+Example Task invocation pattern:
+```
+Task 1: "Run the market-content agent on <url>. Business type: <type>. Page map: <pages>. HTML data: <json>"
+Task 2: "Run the market-conversion agent on <url>. Business type: <type>. Page map: <pages>. HTML data: <json>"
+Task 3: "Run the market-competitive agent on <url>. Business type: <type>. Page map: <pages>."
+Task 4: "Run the market-technical agent on <url>. Business type: <type>. HTML data: <json>"
+Task 5: "Run the market-strategy agent on <url>. Business type: <type>. Page map: <pages>."
+```
+
+Wait for all 5 tasks to complete before proceeding to Phase 3.
 
 ### Subagent 1: market-content
 

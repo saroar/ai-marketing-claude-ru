@@ -1,6 +1,6 @@
 #!/bin/bash
-# AI Marketing Suite — Claude Code Skills Installer
-# Installs marketing skills, agents, and scripts into Claude Code
+# AI Marketing Suite RU — Установщик скилов Claude Code
+# Устанавливает маркетинговые скилы для русского рынка
 
 set -e
 

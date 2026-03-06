@@ -31,21 +31,24 @@ If no previous data exists, inform the user and offer to:
 2. Generate a report based on available information (website URL, user-provided data)
 3. Create a report template they can fill in
 
-### Step 2: Calculate the Marketing Scorecard
+### Step 2: Determine Scores
 
-Score across 6 categories, each worth up to 100 points. The overall score is the weighted average.
+**Priority: Reuse scores from previous audits — do NOT invent a second scoring system.**
 
-#### Category 1: Website & Conversion (Weight: 25%)
-Evaluate based on landing page analysis, CRO findings, and UX assessment.
+Check if `MARKETING-AUDIT.md` exists in the current directory:
+- If YES: extract the 6 category scores and weighted total directly from it. Do not re-score. Just present those numbers in the report.
+- If NO: run a fresh analysis using WebFetch on the target URL, then score using the same methodology as `/market audit`:
 
-| Factor | Points Available | Criteria |
+| Category | Weight | What to Evaluate |
 |---|---|---|
-| Page load speed | 15 | Under 2s = 15, Under 3s = 10, Under 5s = 5, Over 5s = 0 |
-| Mobile responsiveness | 15 | Fully responsive = 15, Mostly = 10, Partially = 5, Not = 0 |
-| Clear value proposition | 20 | Immediately clear = 20, Takes effort = 12, Vague = 5, Missing = 0 |
-| CTA effectiveness | 20 | Strong and clear = 20, Present but weak = 12, Unclear = 5, Missing = 0 |
-| Social proof | 15 | Multiple types = 15, Some = 10, Minimal = 5, None = 0 |
-| Form optimization | 15 | Optimized = 15, Adequate = 10, Needs work = 5, Broken = 0 |
+| Content & Messaging | 25% | Copy quality, value props, headline clarity, CTAs |
+| Conversion Optimization | 20% | CTAs, forms, friction, social proof, urgency |
+| SEO & Discoverability | 20% | On-page tags, header structure, schema, sitemap |
+| Competitive Positioning | 15% | Differentiation, market awareness |
+| Brand & Trust | 10% | Brand consistency, trust signals, authority |
+| Growth & Strategy | 10% | Pricing, acquisition channels, retention |
+
+**Do NOT score "page load speed" — WebFetch cannot measure actual speed. If page weight signals are needed, note whether render-blocking scripts or missing lazy loading are visible in HTML.**
 
 #### Category 2: SEO & Organic (Weight: 20%)
 Evaluate based on SEO audit findings.
