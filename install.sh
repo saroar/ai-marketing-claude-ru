@@ -60,11 +60,11 @@ mkdir -p "$AGENTS_DIR"
 
 # Install main skill orchestrator as "market-ru"
 echo -e "${BLUE}Установка главного скила (market-ru)...${NC}"
-mkdir -p "$SKILLS_DIR/market-ru"
-cp "$SCRIPT_DIR/market/SKILL.md" "$SKILLS_DIR/market-ru/SKILL.md"
-echo -e "  ${GREEN}✓${NC} market-ru/SKILL.md (оркестратор)"
+mkdir -p "$SKILLS_DIR/marketru"
+cp "$SCRIPT_DIR/market/SKILL.md" "$SKILLS_DIR/marketru/SKILL.md"
+echo -e "  ${GREEN}✓${NC} marketru/SKILL.md (оркестратор)"
 
-# Install sub-skills with "market-ru-" prefix
+# Install sub-skills with "marketru-" prefix (no hyphen before ru — Claude Code parses hyphens as separators)
 echo -e "\n${BLUE}Установка под-скилов...${NC}"
 SKILLS=(
     "market-audit"
@@ -85,7 +85,7 @@ SKILLS=(
 
 SKILL_COUNT=0
 for skill in "${SKILLS[@]}"; do
-    ru_skill="${skill/market-/market-ru-}"
+    ru_skill="${skill/market-/marketru-}"
     if [ -f "$SCRIPT_DIR/skills/$skill/SKILL.md" ]; then
         mkdir -p "$SKILLS_DIR/$ru_skill"
         cp "$SCRIPT_DIR/skills/$skill/SKILL.md" "$SKILLS_DIR/$ru_skill/SKILL.md"
@@ -108,7 +108,7 @@ AGENTS=(
 
 AGENT_COUNT=0
 for agent in "${AGENTS[@]}"; do
-    ru_agent="${agent/market-/market-ru-}"
+    ru_agent="${agent/market-/marketru-}"
     if [ -f "$SCRIPT_DIR/agents/$agent.md" ]; then
         cp "$SCRIPT_DIR/agents/$agent.md" "$AGENTS_DIR/$ru_agent.md"
         echo -e "  ${GREEN}✓${NC} $ru_agent"
@@ -120,7 +120,7 @@ done
 
 # Install scripts (shared scripts dir under market-ru)
 echo -e "\n${BLUE}Установка скриптов...${NC}"
-SCRIPTS_TARGET="$SKILLS_DIR/market-ru/scripts"
+SCRIPTS_TARGET="$SKILLS_DIR/marketru/scripts"
 mkdir -p "$SCRIPTS_TARGET"
 
 SCRIPT_FILES=(
@@ -144,7 +144,7 @@ done
 
 # Install templates
 echo -e "\n${BLUE}Установка шаблонов...${NC}"
-TEMPLATES_TARGET="$SKILLS_DIR/market-ru/templates"
+TEMPLATES_TARGET="$SKILLS_DIR/marketru/templates"
 mkdir -p "$TEMPLATES_TARGET"
 
 TEMPLATE_COUNT=0
@@ -189,22 +189,22 @@ echo -e "  Агентов установлено:  ${GREEN}$AGENT_COUNT${NC}"
 echo -e "  Скриптов установлено: ${GREEN}$SCRIPT_COUNT${NC}"
 echo -e "  Шаблонов установлено: ${GREEN}$TEMPLATE_COUNT${NC}"
 echo ""
-echo -e "${CYAN}Доступные команды (/market-ru):${NC}"
-echo "  /market-ru audit <url>        Полный аудит (5 параллельных агентов)"
-echo "  /market-ru quick <url>        Быстрый снапшот за 60 секунд"
-echo "  /market-ru copy <url>         Генерация копирайтинга"
-echo "  /market-ru emails <тема>      Email-последовательности"
-echo "  /market-ru social <тема>      Контент-план (ВК, Telegram, OK.ru)"
-echo "  /market-ru ads <url>          Яндекс.Директ + VK Ads + Telegram"
-echo "  /market-ru funnel <url>       Анализ воронки продаж"
-echo "  /market-ru competitors <url>  Конкурентная разведка"
-echo "  /market-ru landing <url>      CRO-анализ лендинга"
-echo "  /market-ru launch <продукт>   План запуска"
-echo "  /market-ru proposal <клиент>  Коммерческое предложение"
-echo "  /market-ru report <url>       Маркетинговый отчёт"
-echo "  /market-ru seo <url>          SEO-аудит (Яндекс + Google)"
-echo "  /market-ru brand <url>        Анализ голоса бренда"
+echo -e "${CYAN}Доступные команды (/marketru):${NC}"
+echo "  /marketru audit <url>        Полный аудит (5 параллельных агентов)"
+echo "  /marketru quick <url>        Быстрый снапшот за 60 секунд"
+echo "  /marketru copy <url>         Генерация копирайтинга"
+echo "  /marketru emails <тема>      Email-последовательности"
+echo "  /marketru social <тема>      Контент-план (ВК, Telegram, OK.ru)"
+echo "  /marketru ads <url>          Яндекс.Директ + VK Ads + Telegram"
+echo "  /marketru funnel <url>       Анализ воронки продаж"
+echo "  /marketru competitors <url>  Конкурентная разведка"
+echo "  /marketru landing <url>      CRO-анализ лендинга"
+echo "  /marketru launch <продукт>   План запуска"
+echo "  /marketru proposal <клиент>  Коммерческое предложение"
+echo "  /marketru report <url>       Маркетинговый отчёт"
+echo "  /marketru seo <url>          SEO-аудит (Яндекс + Google)"
+echo "  /marketru brand <url>        Анализ голоса бренда"
 echo ""
 echo -e "  ${YELLOW}Начните новую сессию Claude Code для использования скилов.${NC}"
-echo -e "  ${GREEN}Оба варианта (/market и /market-ru) работают одновременно.${NC}"
+echo -e "  ${GREEN}Оба варианта (/market и /marketru) работают одновременно.${NC}"
 echo ""
